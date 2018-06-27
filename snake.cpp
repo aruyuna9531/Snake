@@ -1,5 +1,5 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include<cstdio>
+#include<cstdlib>
 #include<conio.h>
 #include<windows.h>
 #include<time.h>
