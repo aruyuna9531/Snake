@@ -1,3 +1,6 @@
+//Author: aruyuna
+//2018.6.27
+
 #include<cstdio>
 #include<cstdlib>
 #include<conio.h>
