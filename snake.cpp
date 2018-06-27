@@ -11,7 +11,7 @@ static int Score=0;
 static int straight=0;			//方向，0右 1下 2左 3上
 static char gameRegion[region_x][region_y];	//游戏区域
 static int food_x,food_y;		//食物的位置
-int turned=0;
+int turned=0;		//转身信号量，防止换方向过快导致掉头吃尾巴的bug
 int gameover=0;		//gameover信号量，为1则不能操作
 
 void printScreen();
