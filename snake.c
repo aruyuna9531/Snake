@@ -175,7 +175,7 @@ snake s;
 void printScreen(){			//画版面
 	int i,j;
 	system("cls");						//清除屏幕
-	printf("Score\t\n",Score);		//第一行写分数
+	printf("Score\t%d\n",Score);		//第一行写分数
 	for(i=0;i<region_y+2;i++)printf("#");	//以#号代表边界
 	printf("\n");
 	for(i=0;i<region_x;i++){
