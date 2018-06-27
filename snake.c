@@ -217,7 +217,7 @@ DWORD WINAPI ChangeDirect(LPVOID lpParamter)
 		case 's':if(straight!=3)straight=1;break;
 		case 'd':if(straight!=2)straight=0;break;
 		}
-		printScreen();
+		//printScreen();
 	}
     return 0L;
 }
