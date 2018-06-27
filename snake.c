@@ -28,6 +28,7 @@ void gotoxy(int x,int y)		//指定位置输出
 }
 
 void putfood(){
+	//放置食物
 	int x,y;
 	srand(time(NULL));
 	do{
@@ -42,6 +43,7 @@ void putfood(){
 }
 
 void regionInitial(){
+	//区域初始化
 	int i,j;
 	for(i=0;i<region_x;i++){
 		for(j=0;j<region_y;j++){
@@ -194,7 +196,8 @@ public:
 
 snake s;
 
-void printScreen(){			//画版面
+void printScreen(){
+	//画版面
 	int i,j;
 	system("cls");						//清除屏幕
 	printf("Score 0\t\t操作提示：W向上，A向左，S向下，D向右\n");		//第一行写分数
