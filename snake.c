@@ -11,9 +11,21 @@ static int Score=0;
 static int straight=0;			//方向，0右 1下 2左 3上
 static char gameRegion[region_x][region_y];	//游戏区域
 static int food_x,food_y;		//食物的位置
+int turned=0;
 int gameover=0;		//gameover信号量，为1则不能操作
 
 void printScreen();
+
+void gotoxy(int x,int y)		//指定位置输出
+{
+    CONSOLE_SCREEN_BUFFER_INFO    csbiInfo;                            
+    HANDLE    hConsoleOut;
+    hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleScreenBufferInfo(hConsoleOut,&csbiInfo);
+    csbiInfo.dwCursorPosition.X = x;                                    
+    csbiInfo.dwCursorPosition.Y = y;                                    
+    SetConsoleCursorPosition(hConsoleOut,csbiInfo.dwCursorPosition);   
+}
 
 void putfood(){
 	int x,y;
@@ -23,6 +35,8 @@ void putfood(){
 		y=rand()%region_y;	//随机生成食物坐标
 	}while(gameRegion[x][y]=='*');	//位置没被蛇身占据时结束
 	gameRegion[x][y]='0';	//以字符0代表食物
+	gotoxy(y+1,x+2);
+	printf("0");
 	food_x=x;
 	food_y=y;
 }
@@ -38,6 +52,7 @@ void regionInitial(){
 		gameRegion[3][i]='*';
 	}
 	putfood();						//放食物，初始化结束
+	printScreen();
 }
 
 class pos{
@@ -104,6 +119,8 @@ public:
 			//去尾
 			pos *tmp=tail;
 			gameRegion[tmp->x][tmp->y]=' ';	//清空该位置
+			gotoxy(tmp->y+1, tmp->x+2);		//从屏幕上清掉
+			printf(" ");
 			tail=tail->pre;
 			tail->next=NULL;
 			//加头
@@ -136,6 +153,8 @@ public:
 			head=tmp;
 			tmp->pre=NULL;
 			gameRegion[head->x][head->y]='*';
+			gotoxy(head->y+1,head->x+2);
+			printf("*");
 		}
 		else{
 			//吃了食物，加头
@@ -162,10 +181,13 @@ public:
 			head->pre->next=head;
 			head=head->pre;
 			gameRegion[head->x][head->y]='*';
+			gotoxy(head->y+1,head->x+2);
+			printf("*");
 			Score++;
+			gotoxy(6,0);
+			printf("%d",Score);
 			putfood();
 		}
-		printScreen();
 		return 0;
 	}
 };
@@ -175,7 +197,7 @@ snake s;
 void printScreen(){			//画版面
 	int i,j;
 	system("cls");						//清除屏幕
-	printf("Score\t%d\n",Score);		//第一行写分数
+	printf("Score 0\t\t操作提示：W向上，A向左，S向下，D向右\n");		//第一行写分数
 	for(i=0;i<region_y+2;i++)printf("#");	//以#号代表边界
 	printf("\n");
 	for(i=0;i<region_x;i++){
@@ -186,6 +208,7 @@ void printScreen(){			//画版面
 	for(i=0;i<region_y+2;i++)printf("#");	//底部边界
 	printf("\n");
 }
+
 
 int difficulty(){
 	printf("选择游戏难度：\n");
@@ -201,7 +224,7 @@ int difficulty(){
 	case 2:return 500;
 	case 3:return 250;
 	case 4:return 100;
-	case 5:return 20;
+	case 5:return 50;
 	}
 }
 
@@ -212,25 +235,54 @@ DWORD WINAPI ChangeDirect(LPVOID lpParamter)
 	while(gameover==0){
 		int c=getch();
 		switch(c){
-		case 'w':if(straight!=1)straight=3;break;
-		case 'a':if(straight!=0)straight=2;break;
-		case 's':if(straight!=3)straight=1;break;
-		case 'd':if(straight!=2)straight=0;break;
+		case 'w':
+			if(turned==0){
+				if(straight!=1){
+					straight=3;
+					turned=1;
+				}
+			}break;
+		case 'a':
+			if(turned==0){
+				if(straight!=0){
+					straight=2;
+					turned=1;
+				}
+			}break;
+		case 's':
+			if(turned==0){
+				if(straight!=3){
+					straight=1;
+					turned=1;
+				}
+			}break;
+		case 'd':
+			if(turned==0){
+				if(straight!=2){
+					straight=0;
+					turned=1;
+				}
+			}break;
 		}
-		//printScreen();
 	}
     return 0L;
 }
-
+void HideCursor()//隐藏光标
+{
+ CONSOLE_CURSOR_INFO cursor_info = {1, 0}; 
+ SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
+}
 int main()
 {
 	int diff=difficulty();
+	HideCursor();
 	s.createSnake();
 	regionInitial();
     HANDLE hThread = CreateThread(NULL, 0, ChangeDirect, NULL, 0, NULL);
-    CloseHandle(hThread);
+    CloseHandle(hThread); 
     while(gameover==0 && s.moveForward()==0){
 		Sleep(diff);
+		if(turned==1)turned=0;
 	}
 	printf("GAME OVER，按ESC退出\n");
 	s.destroySnake();
