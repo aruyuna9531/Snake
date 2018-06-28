@@ -1,8 +1,7 @@
-//Author: aruyuna
-//2018.6.27
-
-#include<cstdio>
-#include<cstdlib>
+//Author: Aruyuna
+//2018.6.28
+#include<stdio.h>
+#include<stdlib.h>
 #include<conio.h>
 #include<windows.h>
 #include<time.h>
@@ -16,6 +15,7 @@ static char gameRegion[region_x][region_y];	//游戏区域
 static int food_x,food_y;		//食物的位置
 int turned=0;		//转身信号量，防止换方向过快导致掉头吃尾巴的bug
 int gameover=0;		//gameover信号量，为1则不能操作
+int pause=0;		//暂停信号量
 
 void printScreen();
 
@@ -31,7 +31,6 @@ void gotoxy(int x,int y)		//指定位置输出
 }
 
 void putfood(){
-	//放置食物
 	int x,y;
 	srand(time(NULL));
 	do{
@@ -46,7 +45,6 @@ void putfood(){
 }
 
 void regionInitial(){
-	//区域初始化
 	int i,j;
 	for(i=0;i<region_x;i++){
 		for(j=0;j<region_y;j++){
@@ -199,11 +197,10 @@ public:
 
 snake s;
 
-void printScreen(){
-	//画版面
+void printScreen(){			//画版面
 	int i,j;
 	system("cls");						//清除屏幕
-	printf("Score 0\t\t操作提示：W向上，A向左，S向下，D向右\n");		//第一行写分数
+	printf("Score 0\t\t操作提示：W向上，A向左，S向下，D向右，P暂停游戏\n");		//第一行写分数
 	for(i=0;i<region_y+2;i++)printf("#");	//以#号代表边界
 	printf("\n");
 	for(i=0;i<region_x;i++){
@@ -242,33 +239,38 @@ DWORD WINAPI ChangeDirect(LPVOID lpParamter)
 		int c=getch();
 		switch(c){
 		case 'w':
-			if(turned==0){
+			if(turned==0 && pause==0){
 				if(straight!=1){
 					straight=3;
 					turned=1;
 				}
 			}break;
 		case 'a':
-			if(turned==0){
+			if(turned==0 && pause==0){
 				if(straight!=0){
 					straight=2;
 					turned=1;
 				}
 			}break;
 		case 's':
-			if(turned==0){
+			if(turned==0 && pause==0){
 				if(straight!=3){
 					straight=1;
 					turned=1;
 				}
 			}break;
 		case 'd':
-			if(turned==0){
+			if(turned==0 && pause==0){
 				if(straight!=2){
 					straight=0;
 					turned=1;
 				}
 			}break;
+		case 'p':
+			pause=1-pause;
+			break;
+		default:
+			break;
 		}
 	}
     return 0L;
@@ -286,8 +288,11 @@ int main()
 	regionInitial();
     HANDLE hThread = CreateThread(NULL, 0, ChangeDirect, NULL, 0, NULL);
     CloseHandle(hThread); 
-    while(gameover==0 && s.moveForward()==0){
-		Sleep(diff);
+    while(gameover==0){
+		if(pause==0){
+			if(s.moveForward()!=0)break;
+			Sleep(diff);
+		}
 		if(turned==1)turned=0;
 	}
 	printf("GAME OVER，按ESC退出\n");
