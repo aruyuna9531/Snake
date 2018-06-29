@@ -221,13 +221,17 @@ int difficulty(){
 	printf("4.Expert（蛇移动极快）\n");
 	printf("5.Master（蛇一直在动）\n");
 	int t;
-	scanf("%d",&t);
-	switch(t){
-	case 1:return 1000;
-	case 2:return 500;
-	case 3:return 250;
-	case 4:return 100;
-	case 5:return 50;
+	while(1){
+		scanf("%d",&t);
+		switch(t){
+		case 1:return 1000;
+		case 2:return 500;
+		case 3:return 250;
+		case 4:return 100;
+		case 5:return 50;
+		default:break;
+		}
+		printf("重输：");
 	}
 }
 
@@ -286,9 +290,9 @@ int main()
 	HideCursor();
 	s.createSnake();
 	regionInitial();
-    HANDLE hThread = CreateThread(NULL, 0, ChangeDirect, NULL, 0, NULL);
-    CloseHandle(hThread); 
-    while(gameover==0){
+    	HANDLE hThread = CreateThread(NULL, 0, ChangeDirect, NULL, 0, NULL);
+    	CloseHandle(hThread); 
+    	while(gameover==0){
 		if(pause==0){
 			if(s.moveForward()!=0)break;
 			Sleep(diff);
@@ -301,5 +305,5 @@ int main()
 	do{
 		exit=getch();
 	}while(exit!=27);
-    return 0;
+    	return 0;
 }
