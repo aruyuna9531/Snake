@@ -119,6 +119,7 @@ public:
 		}
 		int x=0,y=0;
 		if(eatFood==0){					//没吃
+			//这里应该用尾巴结点坐标更改为头结点坐标，调一下新尾巴，旧头，新头指针方向。实现待定
 			//去尾
 			pos *tmp=tail;
 			gameRegion[tmp->x][tmp->y]=' ';	//清空该位置
